@@ -14,7 +14,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 input_size = 784
 hidden_size = 625
 num_classes = 10
-num_epochs = 5
+num_epochs = 20
 batch_size = 512
 learning_rate = 0.0015
 
@@ -45,6 +45,7 @@ class NeuralNet(nn.Module):
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size, num_classes)
         self.weight_init()
+        self.dropout = nn.Dropout(0.95)
     
     def weight_init(self):
         init.xavier_normal_(self.fc1.weight)
@@ -55,6 +56,7 @@ class NeuralNet(nn.Module):
     def forward(self, x):
         out = self.fc1(x)
         out = self.relu(out)
+        out = self.dropout(out)
         out = self.fc2(out)
         return out
 
@@ -87,6 +89,7 @@ for epoch in range(num_epochs):
 
 # Test the model
 # In test phase, we don't need to compute gradients (for memory efficiency)
+model.eval()
 with torch.no_grad():
     correct = 0
     total = 0
